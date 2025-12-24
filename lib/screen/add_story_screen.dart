@@ -8,15 +8,13 @@ import '../provider/auth_provider.dart';
 import '../provider/upload_provider.dart';
 import '../provider/story_provider.dart';
 import '../l10n/app_localizations.dart';
+
 class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
   final VoidCallback onBack;
 
-  const AddStoryScreen({
-    Key? key,
-    required this.onUpload,
-    required this.onBack,
-  }) : super(key: key);
+  const AddStoryScreen({Key? key, required this.onUpload, required this.onBack})
+    : super(key: key);
 
   @override
   State<AddStoryScreen> createState() => _AddStoryScreenState();
@@ -92,8 +90,9 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                AppLocalizations.of(context)!
-                    .originalSize((fileSize / 1024 / 1024).toStringAsFixed(2)),
+                AppLocalizations.of(
+                  context,
+                )!.originalSize((fileSize / 1024 / 1024).toStringAsFixed(2)),
               ),
               duration: const Duration(seconds: 2),
             ),
@@ -109,7 +108,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
               SnackBar(
                 content: Text(
                   AppLocalizations.of(context)!.imageCompressed(
-                      (compressedSize / 1024 / 1024).toStringAsFixed(2)),
+                    (compressedSize / 1024 / 1024).toStringAsFixed(2),
+                  ),
                 ),
                 backgroundColor: Colors.green,
                 duration: const Duration(seconds: 2),
@@ -132,7 +132,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${AppLocalizations.of(context)!.errorProcessingImage}: $e'),
+              '${AppLocalizations.of(context)!.errorProcessingImage}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -168,8 +169,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(uploadProvider.errorMessage ??
-                  AppLocalizations.of(context)!.uploadFailed),
+              content: Text(
+                uploadProvider.errorMessage ??
+                    AppLocalizations.of(context)!.uploadFailed,
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -196,7 +199,6 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
               leading: const Icon(Icons.camera_alt),
               title: Text(AppLocalizations.of(context)!.camera),
               onTap: () {
-                // FIXED: Removed Navigator.pop() - using declarative approach
                 widget.onBack();
                 _pickImage(ImageSource.camera);
               },
@@ -205,7 +207,6 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
               leading: const Icon(Icons.photo_library),
               title: Text(AppLocalizations.of(context)!.gallery),
               onTap: () {
-                // FIXED: Removed Navigator.pop() - using declarative approach
                 widget.onBack();
                 _pickImage(ImageSource.gallery);
               },
@@ -246,45 +247,45 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   ),
                   child: _isCompressing
                       ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 16),
-                      Text(localizations.compressingImage),
-                    ],
-                  )
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(localizations.compressingImage),
+                          ],
+                        )
                       : _imageFile != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(_imageFile!, fit: BoxFit.cover),
-                  )
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_imageFile!, fit: BoxFit.cover),
+                        )
                       : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        localizations.tapToSelectImage,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              localizations.tapToSelectImage,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              localizations.imageAutoCompress,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        localizations.imageAutoCompress,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -327,10 +328,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     ),
                     child: uploadProvider.isLoading
                         ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : Text(localizations.uploadStory),
                   );
                 },

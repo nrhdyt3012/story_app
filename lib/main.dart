@@ -66,10 +66,7 @@ class _MyAppState extends State<MyApp> {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('en', ''),
-          Locale('id', ''),
-        ],
+        supportedLocales: const [Locale('en', ''), Locale('id', '')],
         routerDelegate: myRouterDelegate,
         routeInformationParser: MyRouteInformationParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
@@ -81,8 +78,8 @@ class _MyAppState extends State<MyApp> {
 class MyRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(
-      RouteInformation routeInformation,
-      ) async {
+    RouteInformation routeInformation,
+  ) async {
     return routeInformation.uri.toString();
   }
 

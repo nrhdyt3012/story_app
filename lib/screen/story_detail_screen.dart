@@ -120,17 +120,14 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                               children: [
                                 Text(
                                   story.name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
+                                  style: Theme.of(context).textTheme.titleMedium
                                       ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  DateFormat('MMM dd, yyyy - HH:mm')
-                                      .format(story.createdAt),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
+                                  DateFormat(
+                                    'MMM dd, yyyy - HH:mm',
+                                  ).format(story.createdAt),
+                                  style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(color: Colors.grey),
                                 ),
                               ],
@@ -141,9 +138,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       const SizedBox(height: 24),
                       Text(
                         localizations.description,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
+                        style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -155,9 +150,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                         const SizedBox(height: 24),
                         Text(
                           localizations.location,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
+                          style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
