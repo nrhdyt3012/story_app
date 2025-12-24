@@ -17,10 +17,10 @@ class AddStoryScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State createState() => _AddStoryScreenState();
+  State<AddStoryScreen> createState() => _AddStoryScreenState();
 }
 
-class _AddStoryScreenState extends State {
+class _AddStoryScreenState extends State<AddStoryScreen> {
   final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
@@ -32,7 +32,7 @@ class _AddStoryScreenState extends State {
     super.dispose();
   }
 
-  Future _pickImage(ImageSource source) async {
+  Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(source: source);
       if (image != null) {
@@ -52,11 +52,11 @@ class _AddStoryScreenState extends State {
     }
   }
 
-  Future _handleUpload() async {
+  Future<void> _handleUpload() async {
     if (_formKey.currentState!.validate() && _imageFile != null) {
-      final authProvider = context.read();
-      final uploadProvider = context.read();
-      final storyProvider = context.read();
+      final authProvider = context.read<AuthProvider>();
+      final uploadProvider = context.read<UploadProvider>();
+      final storyProvider = context.read<StoryProvider>();
 
       final token = await authProvider.getToken();
 

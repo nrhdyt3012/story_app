@@ -5,19 +5,19 @@ import '../data/model/story.dart';
 class StoryProvider with ChangeNotifier {
   final ApiService apiService;
 
-  List _stories = [];
+  List<Story> _stories = [];
   Story? _selectedStory;
   bool _isLoading = false;
   String? _errorMessage;
 
-  List get stories => _stories;
+  List<Story> get stories => _stories;
   Story? get selectedStory => _selectedStory;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
   StoryProvider({required this.apiService});
 
-  Future fetchStories(String token) async {
+  Future<void> fetchStories(String token) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -38,7 +38,7 @@ class StoryProvider with ChangeNotifier {
     }
   }
 
-  Future fetchStoryDetail(String token, String id) async {
+  Future<void> fetchStoryDetail(String token, String id) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();

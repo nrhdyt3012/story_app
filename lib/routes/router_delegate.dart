@@ -5,8 +5,8 @@ import '../screen/story_list_screen.dart';
 import '../screen/story_detail_screen.dart';
 import '../screen/add_story_screen.dart';
 
-class MyRouterDelegate extends RouterDelegate
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin {
+class MyRouterDelegate extends RouterDelegate<String>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   @override
   final GlobalKey<NavigatorState> navigatorKey;
 
@@ -15,7 +15,7 @@ class MyRouterDelegate extends RouterDelegate
   bool _isRegister = false;
   bool _isAddStory = false;
 
-  MyRouterDelegate() : navigatorKey = GlobalKey();
+  MyRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
   bool get isLoggedIn => _isLoggedIn;
   bool get isRegister => _isRegister;
@@ -39,6 +39,20 @@ class MyRouterDelegate extends RouterDelegate
   void selectStory(String id) {
     _selectedStoryId = id;
     notifyListeners();
+  }
+
+  @override
+  String? get currentConfiguration {
+    if (!_isLoggedIn) {
+      return _isRegister ? '/register' : '/login';
+    }
+    if (_isAddStory) {
+      return '/add-story';
+    }
+    if (_selectedStoryId != null) {
+      return '/story/$_selectedStoryId';
+    }
+    return '/';
   }
 
   @override
@@ -131,7 +145,7 @@ class MyRouterDelegate extends RouterDelegate
   }
 
   @override
-  Future<void> setNewRoutePath(configuration) async {
+  Future<void> setNewRoutePath(String configuration) async {
     // Implementasi bisa kosong jika tidak menggunakan deep linking
   }
 }
