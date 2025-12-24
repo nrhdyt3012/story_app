@@ -6,11 +6,8 @@ class LoginScreen extends StatefulWidget {
   final VoidCallback onLogin;
   final VoidCallback onRegister;
 
-  const LoginScreen({
-    Key? key,
-    required this.onLogin,
-    required this.onRegister,
-  }) : super(key: key);
+  const LoginScreen({Key? key, required this.onLogin, required this.onRegister})
+    : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -80,9 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Share your moments',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 48),
                   TextFormField(
@@ -138,18 +135,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       return ElevatedButton(
-                        onPressed: authProvider.isLoading ? null : _handleLogin, // FIXED: was _handleRegister
+                        onPressed: authProvider.isLoading
+                            ? null
+                            : _handleLogin, // FIXED: was _handleRegister
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: authProvider.isLoading
                             ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
                             : const Text('Login'), // FIXED: was 'Register'
                       );
                     },

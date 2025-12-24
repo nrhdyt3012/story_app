@@ -23,17 +23,12 @@ class ApiService {
     }
   }
 
-  Future register(
-      String name, String email, String password) async {
+  Future register(String name, String email, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/register'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
 
       return RegisterResponse.fromJson(jsonDecode(response.body));
@@ -42,8 +37,7 @@ class ApiService {
     }
   }
 
-  Future getAllStories(String token,
-      {int page = 1, int size = 10}) async {
+  Future getAllStories(String token, {int page = 1, int size = 10}) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/stories?page=$page&size=$size'),
@@ -77,17 +71,19 @@ class ApiService {
     }
   }
 
-  Future uploadStory(
-      String token,
-      String description,
-      File photo,
-      ) async {
+  Future uploadStory(String token, String description, File photo) async {
     try {
-      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/stories'));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/stories'),
+      );
       request.headers['Authorization'] = 'Bearer $token';
       request.fields['description'] = description;
 
-      var multipartFile = await http.MultipartFile.fromPath('photo', photo.path);
+      var multipartFile = await http.MultipartFile.fromPath(
+        'photo',
+        photo.path,
+      );
       request.files.add(multipartFile);
 
       var response = await request.send();

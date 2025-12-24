@@ -3,11 +3,7 @@ class LoginResponse {
   final String message;
   final LoginResult? loginResult;
 
-  LoginResponse({
-    required this.error,
-    required this.message,
-    this.loginResult,
-  });
+  LoginResponse({required this.error, required this.message, this.loginResult});
 
   factory LoginResponse.fromJson(Map json) {
     return LoginResponse(
@@ -25,11 +21,7 @@ class LoginResult {
   final String name;
   final String token;
 
-  LoginResult({
-    required this.userId,
-    required this.name,
-    required this.token,
-  });
+  LoginResult({required this.userId, required this.name, required this.token});
 
   factory LoginResult.fromJson(Map json) {
     return LoginResult(

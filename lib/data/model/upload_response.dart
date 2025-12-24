@@ -2,10 +2,7 @@ class UploadResponse {
   final bool error;
   final String message;
 
-  UploadResponse({
-    required this.error,
-    required this.message,
-  });
+  UploadResponse({required this.error, required this.message});
 
   factory UploadResponse.fromJson(Map json) {
     return UploadResponse(

@@ -15,10 +15,7 @@ class AuthProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   LoginResult? get loginResult => _loginResult;
 
-  AuthProvider({
-    required this.apiService,
-    required this.authPreferences,
-  });
+  AuthProvider({required this.apiService, required this.authPreferences});
 
   Future login(String email, String password) async {
     _isLoading = true;

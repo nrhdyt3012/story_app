@@ -23,7 +23,9 @@ class Story {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       photoUrl: json['photoUrl'] ?? '',
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
       lat: json['lat']?.toDouble(),
       lon: json['lon']?.toDouble(),
     );
@@ -45,9 +47,10 @@ class StoryListResponse {
     return StoryListResponse(
       error: json['error'] ?? false,
       message: json['message'] ?? '',
-      listStory: (json['listStory'] as List?)
-          ?.map((item) => Story.fromJson(item))
-          .toList() ??
+      listStory:
+          (json['listStory'] as List?)
+              ?.map((item) => Story.fromJson(item))
+              .toList() ??
           [],
     );
   }
@@ -58,11 +61,7 @@ class StoryDetailResponse {
   final String message;
   final Story? story;
 
-  StoryDetailResponse({
-    required this.error,
-    required this.message,
-    this.story,
-  });
+  StoryDetailResponse({required this.error, required this.message, this.story});
 
   factory StoryDetailResponse.fromJson(Map json) {
     return StoryDetailResponse(

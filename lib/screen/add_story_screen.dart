@@ -12,11 +12,8 @@ class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
   final VoidCallback onBack;
 
-  const AddStoryScreen({
-    Key? key,
-    required this.onUpload,
-    required this.onBack,
-  }) : super(key: key);
+  const AddStoryScreen({Key? key, required this.onUpload, required this.onBack})
+    : super(key: key);
 
   @override
   State<AddStoryScreen> createState() => _AddStoryScreenState();
@@ -66,10 +63,11 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         quality -= 5;
 
         if (quality < 50) break;
-
       } while (compressedBytes.length > maxSizeInBytes);
 
-      final compressedFile = File('${file.parent.path}/compressed_${file.uri.pathSegments.last}');
+      final compressedFile = File(
+        '${file.parent.path}/compressed_${file.uri.pathSegments.last}',
+      );
       await compressedFile.writeAsBytes(compressedBytes);
 
       return compressedFile;
@@ -93,7 +91,9 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Ukuran asli: ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB'),
+              content: Text(
+                'Ukuran asli: ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB',
+              ),
               duration: const Duration(seconds: 2),
             ),
           );
@@ -241,48 +241,45 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   ),
                   child: _isCompressing
                       ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text('Mengompres gambar...'),
-                    ],
-                  )
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('Mengompres gambar...'),
+                          ],
+                        )
                       : _imageFile != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      _imageFile!,
-                      fit: BoxFit.cover,
-                    ),
-                  )
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_imageFile!, fit: BoxFit.cover),
+                        )
                       : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Tap untuk pilih gambar',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Tap untuk pilih gambar',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Gambar akan otomatis dikompres\njika lebih dari 1MB',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Gambar akan otomatis dikompres\njika lebih dari 1MB',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -325,12 +322,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     ),
                     child: uploadProvider.isLoading
                         ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : const Text('Upload Story'),
                   );
                 },

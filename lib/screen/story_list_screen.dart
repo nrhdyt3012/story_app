@@ -49,10 +49,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
       appBar: AppBar(
         title: const Text('Story App'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadStories,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStories),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {

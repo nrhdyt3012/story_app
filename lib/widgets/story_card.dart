@@ -6,11 +6,8 @@ class StoryCard extends StatelessWidget {
   final Story story;
   final VoidCallback onTap;
 
-  const StoryCard({
-    Key? key,
-    required this.story,
-    required this.onTap,
-  }) : super(key: key);
+  const StoryCard({Key? key, required this.story, required this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +22,9 @@ class StoryCard extends StatelessWidget {
             Hero(
               tag: 'story-${story.id}',
               child: ClipRRect(
-                borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 child: Image.network(
                   story.photoUrl,
                   width: double.infinity,
@@ -50,7 +48,7 @@ class StoryCard extends StatelessWidget {
                         child: CircularProgressIndicator(
                           value: loadingProgress.expectedTotalBytes != null
                               ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
+                                    loadingProgress.expectedTotalBytes!
                               : null,
                         ),
                       ),
@@ -83,18 +81,14 @@ class StoryCard extends StatelessWidget {
                           children: [
                             Text(
                               story.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              DateFormat('MMM dd, yyyy').format(story.createdAt),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
+                              DateFormat(
+                                'MMM dd, yyyy',
+                              ).format(story.createdAt),
+                              style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(color: Colors.grey),
                             ),
                           ],
