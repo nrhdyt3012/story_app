@@ -8,7 +8,7 @@ import '../screen/add_story_screen.dart';
 class MyRouterDelegate extends RouterDelegate
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
   @override
-  final GlobalKey navigatorKey;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   String? _selectedStoryId;
   bool _isLoggedIn = false;
@@ -131,5 +131,7 @@ class MyRouterDelegate extends RouterDelegate
   }
 
   @override
-  Future setNewRoutePath(String configuration) async {}
+  Future<void> setNewRoutePath(configuration) async {
+    // Implementasi bisa kosong jika tidak menggunakan deep linking
+  }
 }

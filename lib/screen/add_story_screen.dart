@@ -21,7 +21,7 @@ class AddStoryScreen extends StatefulWidget {
 }
 
 class _AddStoryScreenState extends State {
-  final _formKey = GlobalKey();
+  final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? _imageFile;
@@ -210,7 +210,7 @@ class _AddStoryScreenState extends State {
                 },
               ),
               const SizedBox(height: 24),
-              Consumer(
+              Consumer<UploadProvider>(
                 builder: (context, uploadProvider, child) {
                   return ElevatedButton(
                     onPressed: uploadProvider.isLoading ? null : _handleUpload,

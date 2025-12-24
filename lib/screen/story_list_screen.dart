@@ -17,19 +17,19 @@ class StoryListScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State createState() => _StoryListScreenState();
+  State<StoryListScreen> createState() => _StoryListScreenState();
 }
 
-class _StoryListScreenState extends State {
+class _StoryListScreenState extends State<StoryListScreen> {
   @override
   void initState() {
     super.initState();
     _loadStories();
   }
 
-  Future _loadStories() async {
-    final authProvider = context.read();
-    final storyProvider = context.read();
+  Future<void> _loadStories() async {
+    final authProvider = context.read<AuthProvider>();
+    final storyProvider = context.read<StoryProvider>();
     final token = await authProvider.getToken();
 
     if (token != null) {
@@ -37,8 +37,8 @@ class _StoryListScreenState extends State {
     }
   }
 
-  Future _handleLogout() async {
-    final authProvider = context.read();
+  Future<void> _handleLogout() async {
+    final authProvider = context.read<AuthProvider>();
     await authProvider.logout();
     widget.onLogout();
   }
@@ -80,7 +80,7 @@ class _StoryListScreenState extends State {
           ),
         ],
       ),
-      body: Consumer(
+      body: Consumer<StoryProvider>(
         builder: (context, storyProvider, child) {
           if (storyProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());

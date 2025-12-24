@@ -16,10 +16,10 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State {
+class _MyAppState extends State<MyApp> {
   late MyRouterDelegate myRouterDelegate;
   late AuthProvider authProvider;
 
@@ -35,7 +35,7 @@ class _MyAppState extends State {
     _checkLoginStatus();
   }
 
-  Future _checkLoginStatus() async {
+  Future<void> _checkLoginStatus() async {
     final isLoggedIn = await authProvider.isLoggedIn();
     myRouterDelegate.setLoggedIn(isLoggedIn);
   }
@@ -68,16 +68,16 @@ class _MyAppState extends State {
           Locale('id', ''),
         ],
         routerDelegate: myRouterDelegate,
-        routeInformationParser: RouteInformationParser(),
+        routeInformationParser: MyRouteInformationParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
       ),
     );
   }
 }
 
-class RouteInformationParser extends RouteInformationParser {
+class MyRouteInformationParser extends RouteInformationParser<String> {
   @override
-  Future parseRouteInformation(RouteInformation routeInformation) async {
+  Future<String> parseRouteInformation(RouteInformation routeInformation) async {
     return routeInformation.uri.toString();
   }
 
