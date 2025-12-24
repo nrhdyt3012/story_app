@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
 import '../provider/story_provider.dart';
 import '../widgets/story_card.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 class StoryListScreen extends StatefulWidget {
   final Function(String) onTapped;

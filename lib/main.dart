@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart'; // ← IMPORT INI
 import 'data/api/api_service.dart';
 import 'data/preferences/auth_preferences.dart';
 import 'provider/auth_provider.dart';
@@ -58,12 +59,17 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
+        // ✅ PENTING: Tambahkan localizationsDelegates
         localizationsDelegates: const [
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('en', ''), Locale('id', '')],
+        supportedLocales: const [
+          Locale('en', ''),
+          Locale('id', ''),
+        ],
         routerDelegate: myRouterDelegate,
         routeInformationParser: MyRouteInformationParser(),
         backButtonDispatcher: RootBackButtonDispatcher(),
@@ -75,8 +81,8 @@ class _MyAppState extends State<MyApp> {
 class MyRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(
-    RouteInformation routeInformation,
-  ) async {
+      RouteInformation routeInformation,
+      ) async {
     return routeInformation.uri.toString();
   }
 

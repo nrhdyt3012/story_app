@@ -7,8 +7,7 @@ import 'package:image/image.dart' as img;
 import '../provider/auth_provider.dart';
 import '../provider/upload_provider.dart';
 import '../provider/story_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import '../l10n/app_localizations.dart';
 class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
   final VoidCallback onBack;

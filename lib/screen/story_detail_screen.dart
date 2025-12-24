@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../provider/auth_provider.dart';
 import '../provider/story_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final String storyId;
