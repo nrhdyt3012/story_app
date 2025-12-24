@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'data/api/api_service.dart';
+import 'data/preferences/auth_preferences.dart';
+import 'provider/auth_provider.dart';
+import 'provider/story_provider.dart';
+import 'provider/upload_provider.dart';
+import 'routes/router_delegate.dart';
 
 void main() {
   runApp(const MyApp());
@@ -49,7 +55,7 @@ class _MyAppState extends State {
       child: MaterialApp.router(
         title: 'Story App',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
         localizationsDelegates: const [
@@ -66,5 +72,17 @@ class _MyAppState extends State {
         backButtonDispatcher: RootBackButtonDispatcher(),
       ),
     );
+  }
+}
+
+class RouteInformationParser extends RouteInformationParser {
+  @override
+  Future parseRouteInformation(RouteInformation routeInformation) async {
+    return routeInformation.uri.toString();
+  }
+
+  @override
+  RouteInformation restoreRouteInformation(String configuration) {
+    return RouteInformation(uri: Uri.parse(configuration));
   }
 }
