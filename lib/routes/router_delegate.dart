@@ -146,6 +146,5 @@ class MyRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String configuration) async {
-    // Implementasi bisa kosong jika tidak menggunakan deep linking
   }
 }

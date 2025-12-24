@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import '../data/api/api_service.dart';
 import '../data/preferences/auth_preferences.dart';
 import '../data/model/login_response.dart';
-import '../data/model/register_response.dart';
 
 class AuthProvider with ChangeNotifier {
   final ApiService apiService;
