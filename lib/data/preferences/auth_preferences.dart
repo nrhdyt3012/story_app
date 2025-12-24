@@ -20,6 +20,16 @@ class AuthPreferences {
     return prefs.getString(_tokenKey);
   }
 
+  Future getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userIdKey);
+  }
+
+  Future getName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_nameKey);
+  }
+
   Future isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_isLoggedInKey) ?? false;
