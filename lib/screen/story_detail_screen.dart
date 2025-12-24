@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../provider/auth_provider.dart';
 import '../provider/story_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StoryDetailScreen extends StatefulWidget {
   final String storyId;
@@ -37,6 +38,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Consumer<StoryProvider>(
         builder: (context, storyProvider, child) {
@@ -55,7 +58,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadStoryDetail,
-                    child: const Text('Retry'),
+                    child: Text(localizations.retry),
                   ),
                 ],
               ),
@@ -64,7 +67,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
           final story = storyProvider.selectedStory;
           if (story == null) {
-            return const Center(child: Text('Story not found'));
+            return Center(child: Text(localizations.storyNotFound));
           }
 
           return CustomScrollView(
@@ -117,14 +120,17 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                               children: [
                                 Text(
                                   story.name,
-                                  style: Theme.of(context).textTheme.titleMedium
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
                                       ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  DateFormat(
-                                    'MMM dd, yyyy - HH:mm',
-                                  ).format(story.createdAt),
-                                  style: Theme.of(context).textTheme.bodySmall
+                                  DateFormat('MMM dd, yyyy - HH:mm')
+                                      .format(story.createdAt),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
                                       ?.copyWith(color: Colors.grey),
                                 ),
                               ],
@@ -134,8 +140,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Description',
-                        style: Theme.of(context).textTheme.titleMedium
+                        localizations.description,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -146,8 +154,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       if (story.lat != null && story.lon != null) ...[
                         const SizedBox(height: 24),
                         Text(
-                          'Location',
-                          style: Theme.of(context).textTheme.titleMedium
+                          localizations.location,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onLogin;
   final VoidCallback onRegister;
 
-  const LoginScreen({Key? key, required this.onLogin, required this.onRegister})
-    : super(key: key);
+  const LoginScreen({
+    Key? key,
+    required this.onLogin,
+    required this.onRegister,
+  }) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -39,7 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.errorMessage ?? 'Login failed'),
+            content: Text(
+              authProvider.errorMessage ??
+                  AppLocalizations.of(context)!.loginFailed,
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -49,6 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -67,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Story App',
+                    localizations.appTitle,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -75,27 +84,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Share your moments',
+                    localizations.shareYourMoments,
                     textAlign: TextAlign.center,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 48),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email),
+                    decoration: InputDecoration(
+                      labelText: localizations.email,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.email),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return localizations.pleaseEnterEmail;
                       }
                       if (!value.contains('@')) {
-                        return 'Please enter a valid email';
+                        return localizations.pleaseEnterValidEmail;
                       }
                       return null;
                     },
@@ -105,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: localizations.password,
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
@@ -123,10 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return localizations.pleaseEnterPassword;
                       }
                       if (value.length < 8) {
-                        return 'Password must be at least 8 characters';
+                        return localizations.passwordMinLength;
                       }
                       return null;
                     },
@@ -135,21 +145,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       return ElevatedButton(
-                        onPressed: authProvider.isLoading
-                            ? null
-                            : _handleLogin, // FIXED: was _handleRegister
+                        onPressed:
+                        authProvider.isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: authProvider.isLoading
                             ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text('Login'), // FIXED: was 'Register'
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : Text(localizations.login),
                       );
                     },
                   ),
@@ -157,10 +166,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don't have an account? "),
+                      Text(localizations.dontHaveAccount),
                       TextButton(
                         onPressed: widget.onRegister,
-                        child: const Text('Register'),
+                        child: Text(localizations.register),
                       ),
                     ],
                   ),

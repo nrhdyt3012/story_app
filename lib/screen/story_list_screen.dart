@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
 import '../provider/story_provider.dart';
 import '../widgets/story_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StoryListScreen extends StatefulWidget {
   final Function(String) onTapped;
@@ -45,30 +46,38 @@ class _StoryListScreenState extends State<StoryListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Story App'),
+        title: Text(localizations.appTitle),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStories),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadStories,
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
+                  title: Text(localizations.logout),
+                  content: Text(localizations.areYouSureLogout),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      onPressed: () {
+                        // FIXED: Use declarative navigation
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(localizations.cancel),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.of(context).pop();
                         _handleLogout();
                       },
-                      child: const Text('Logout'),
+                      child: Text(localizations.logout),
                     ),
                   ],
                 ),
@@ -94,7 +103,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadStories,
-                    child: const Text('Retry'),
+                    child: Text(localizations.retry),
                   ),
                 ],
               ),
@@ -108,11 +117,11 @@ class _StoryListScreenState extends State<StoryListScreen> {
                 children: [
                   const Icon(Icons.inbox, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
-                  const Text('No stories yet'),
+                  Text(localizations.noStoriesYet),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: widget.onAddStory,
-                    child: const Text('Add Your First Story'),
+                    child: Text(localizations.addYourFirstStory),
                   ),
                 ],
               ),

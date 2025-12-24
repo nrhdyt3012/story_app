@@ -7,13 +7,17 @@ import 'package:image/image.dart' as img;
 import '../provider/auth_provider.dart';
 import '../provider/upload_provider.dart';
 import '../provider/story_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
   final VoidCallback onBack;
 
-  const AddStoryScreen({Key? key, required this.onUpload, required this.onBack})
-    : super(key: key);
+  const AddStoryScreen({
+    Key? key,
+    required this.onUpload,
+    required this.onBack,
+  }) : super(key: key);
 
   @override
   State<AddStoryScreen> createState() => _AddStoryScreenState();
@@ -59,9 +63,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
       do {
         compressedBytes = img.encodeJpg(image, quality: quality);
-
         quality -= 5;
-
         if (quality < 50) break;
       } while (compressedBytes.length > maxSizeInBytes);
 
@@ -85,14 +87,14 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         });
 
         File selectedFile = File(image.path);
-
         final fileSize = await selectedFile.length();
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Ukuran asli: ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB',
+                AppLocalizations.of(context)!
+                    .originalSize((fileSize / 1024 / 1024).toStringAsFixed(2)),
               ),
               duration: const Duration(seconds: 2),
             ),
@@ -101,14 +103,14 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
         if (fileSize > 1024 * 1024) {
           selectedFile = await _compressImage(selectedFile);
-
           final compressedSize = await selectedFile.length();
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Gambar dikompres menjadi ${(compressedSize / 1024 / 1024).toStringAsFixed(2)} MB',
+                  AppLocalizations.of(context)!.imageCompressed(
+                      (compressedSize / 1024 / 1024).toStringAsFixed(2)),
                 ),
                 backgroundColor: Colors.green,
                 duration: const Duration(seconds: 2),
@@ -130,7 +132,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error memproses gambar: $e'),
+            content: Text(
+                '${AppLocalizations.of(context)!.errorProcessingImage}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -155,20 +158,19 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Story berhasil diupload!'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.storyUploadSuccess),
               backgroundColor: Colors.green,
             ),
           );
 
-          // Refresh story list
           await storyProvider.fetchStories(token);
-
           widget.onUpload();
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(uploadProvider.errorMessage ?? 'Upload gagal'),
+              content: Text(uploadProvider.errorMessage ??
+                  AppLocalizations.of(context)!.uploadFailed),
               backgroundColor: Colors.red,
             ),
           );
@@ -176,8 +178,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
       }
     } else if (_imageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Silakan pilih gambar terlebih dahulu'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseSelectImage),
           backgroundColor: Colors.orange,
         ),
       );
@@ -193,17 +195,19 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Kamera'),
+              title: Text(AppLocalizations.of(context)!.camera),
               onTap: () {
-                Navigator.pop(context);
+                // FIXED: Removed Navigator.pop() - using declarative approach
+                widget.onBack();
                 _pickImage(ImageSource.camera);
               },
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Galeri'),
+              title: Text(AppLocalizations.of(context)!.gallery),
               onTap: () {
-                Navigator.pop(context);
+                // FIXED: Removed Navigator.pop() - using declarative approach
+                widget.onBack();
                 _pickImage(ImageSource.gallery);
               },
             ),
@@ -215,9 +219,11 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Story'),
+        title: Text(localizations.addStory),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: widget.onBack,
@@ -240,46 +246,46 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     border: Border.all(color: Colors.grey),
                   ),
                   child: _isCompressing
-                      ? const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text('Mengompres gambar...'),
-                          ],
-                        )
+                      ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(localizations.compressingImage),
+                    ],
+                  )
                       : _imageFile != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(_imageFile!, fit: BoxFit.cover),
-                        )
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(_imageFile!, fit: BoxFit.cover),
+                  )
                       : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_photo_alternate,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Tap untuk pilih gambar',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Gambar akan otomatis dikompres\njika lebih dari 1MB',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_photo_alternate,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        localizations.tapToSelectImage,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        localizations.imageAutoCompress,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -291,21 +297,21 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     });
                   },
                   icon: const Icon(Icons.close),
-                  label: const Text('Hapus Gambar'),
+                  label: Text(localizations.removeImage),
                 ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Deskripsi',
-                  hintText: 'Ceritakan tentang momen ini...',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: localizations.description,
+                  hintText: localizations.descriptionHint,
+                  border: const OutlineInputBorder(),
                   alignLabelWithHint: true,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Silakan masukkan deskripsi';
+                    return localizations.pleaseEnterDescription;
                   }
                   return null;
                 },
@@ -322,11 +328,11 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     ),
                     child: uploadProvider.isLoading
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Upload Story'),
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                        : Text(localizations.uploadStory),
                   );
                 },
               ),

@@ -1,0 +1,185 @@
+{
+  "@@locale": "en",
+  "appTitle": "Story App",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "shareYourMoments": "Share your moments",
+  "@shareYourMoments": {
+    "description": "Subtitle on login screen"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "register": "Register",
+  "@register": {
+    "description": "Register button text"
+  },
+  "dontHaveAccount": "Don't have an account? ",
+  "@dontHaveAccount": {
+    "description": "Text before register link"
+  },
+  "pleaseEnterEmail": "Please enter your email",
+  "@pleaseEnterEmail": {
+    "description": "Email validation message"
+  },
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "@pleaseEnterValidEmail": {
+    "description": "Email format validation message"
+  },
+  "pleaseEnterPassword": "Please enter your password",
+  "@pleaseEnterPassword": {
+    "description": "Password validation message"
+  },
+  "passwordMinLength": "Password must be at least 8 characters",
+  "@passwordMinLength": {
+    "description": "Password length validation message"
+  },
+  "loginFailed": "Login failed",
+  "@loginFailed": {
+    "description": "Login error message"
+  },
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Register screen title"
+  },
+  "joinAndShareStories": "Join and share your stories",
+  "@joinAndShareStories": {
+    "description": "Register screen subtitle"
+  },
+  "name": "Name",
+  "@name": {
+    "description": "Name label"
+  },
+  "pleaseEnterName": "Please enter your name",
+  "@pleaseEnterName": {
+    "description": "Name validation message"
+  },
+  "registrationSuccess": "Registration successful! Please login.",
+  "@registrationSuccess": {
+    "description": "Registration success message"
+  },
+  "registrationFailed": "Registration failed",
+  "@registrationFailed": {
+    "description": "Registration error message"
+  },
+  "addStory": "Add Story",
+  "@addStory": {
+    "description": "Add story screen title"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Description label"
+  },
+  "descriptionHint": "Tell about this moment...",
+  "@descriptionHint": {
+    "description": "Description field hint"
+  },
+  "pleaseEnterDescription": "Please enter description",
+  "@pleaseEnterDescription": {
+    "description": "Description validation message"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera option"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery option"
+  },
+  "tapToSelectImage": "Tap to select image",
+  "@tapToSelectImage": {
+    "description": "Image selection instruction"
+  },
+  "imageAutoCompress": "Image will be auto compressed\nif larger than 1MB",
+  "@imageAutoCompress": {
+    "description": "Image compression info"
+  },
+  "removeImage": "Remove Image",
+  "@removeImage": {
+    "description": "Remove image button"
+  },
+  "uploadStory": "Upload Story",
+  "@uploadStory": {
+    "description": "Upload button text"
+  },
+  "compressingImage": "Compressing image...",
+  "@compressingImage": {
+    "description": "Compressing progress text"
+  },
+  "originalSize": "Original size: {size} MB",
+  "@originalSize": {
+    "description": "Original file size message",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "imageCompressed": "Image compressed to {size} MB",
+  "@imageCompressed": {
+    "description": "Compressed file size message",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "errorProcessingImage": "Error processing image",
+  "@errorProcessingImage": {
+    "description": "Image processing error"
+  },
+  "storyUploadSuccess": "Story uploaded successfully!",
+  "@storyUploadSuccess": {
+    "description": "Upload success message"
+  },
+  "uploadFailed": "Upload failed",
+  "@uploadFailed": {
+    "description": "Upload error message"
+  },
+  "pleaseSelectImage": "Please select an image first",
+  "@pleaseSelectImage": {
+    "description": "No image selected error"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button"
+  },
+  "areYouSureLogout": "Are you sure you want to logout?",
+  "@areYouSureLogout": {
+    "description": "Logout confirmation message"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button"
+  },
+  "noStoriesYet": "No stories yet",
+  "@noStoriesYet": {
+    "description": "Empty story list message"
+  },
+  "addYourFirstStory": "Add Your First Story",
+  "@addYourFirstStory": {
+    "description": "Add first story button"
+  },
+  "storyNotFound": "Story not found",
+  "@storyNotFound": {
+    "description": "Story not found message"
+  },
+  "location": "Location",
+  "@location": {
+    "description": "Location label"
+  }
+}
