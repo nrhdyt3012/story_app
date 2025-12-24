@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import '../screen/login_screen.dart';
+import '../screen/register_screen.dart';
+import '../screen/story_list_screen.dart';
+import '../screen/story_detail_screen.dart';
+import '../screen/add_story_screen.dart';
 
 class MyRouterDelegate extends RouterDelegate
     with ChangeNotifier, PopNavigatorRouterDelegateMixin {
-
   @override
   final GlobalKey navigatorKey;
 
@@ -127,7 +131,5 @@ class MyRouterDelegate extends RouterDelegate
   }
 
   @override
-  Future setNewRoutePath(String configuration) async {
-    // Handle deep linking if needed
-  }
+  Future setNewRoutePath(String configuration) async {}
 }
