@@ -13,11 +13,11 @@ class LoginScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State {
-  final _formKey = GlobalKey();
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -29,9 +29,9 @@ class _LoginScreenState extends State {
     super.dispose();
   }
 
-  Future _handleLogin() async {
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      final authProvider = context.read();
+      final authProvider = context.read<AuthProvider>();
       final success = await authProvider.login(
         _emailController.text,
         _passwordController.text,
@@ -135,11 +135,10 @@ class _LoginScreenState extends State {
                     },
                   ),
                   const SizedBox(height: 24),
-                  Consumer(
+                  Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       return ElevatedButton(
-                        onPressed:
-                        authProvider.isLoading ? null : _handleRegister,
+                        onPressed: authProvider.isLoading ? null : _handleLogin, // FIXED: was _handleRegister
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -151,9 +150,20 @@ class _LoginScreenState extends State {
                             strokeWidth: 2,
                           ),
                         )
-                            : const Text('Register'),
+                            : const Text('Login'), // FIXED: was 'Register'
                       );
                     },
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Don't have an account? "),
+                      TextButton(
+                        onPressed: widget.onRegister,
+                        child: const Text('Register'),
+                      ),
+                    ],
                   ),
                 ],
               ),
