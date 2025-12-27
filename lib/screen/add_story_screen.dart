@@ -7,14 +7,20 @@ import 'package:image/image.dart' as img;
 import '../provider/auth_provider.dart';
 import '../provider/upload_provider.dart';
 import '../provider/story_provider.dart';
+import '../provider/add_story_controller.dart';
 import '../l10n/app_localizations.dart';
 
 class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
   final VoidCallback onBack;
+  final VoidCallback onShowImageSourceDialog;
 
-  const AddStoryScreen({Key? key, required this.onUpload, required this.onBack})
-    : super(key: key);
+  const AddStoryScreen({
+    Key? key,
+    required this.onUpload,
+    required this.onBack,
+    required this.onShowImageSourceDialog,
+  }) : super(key: key);
 
   @override
   State<AddStoryScreen> createState() => _AddStoryScreenState();
@@ -26,6 +32,20 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _imageFile;
   bool _isCompressing = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Listen to controller for pending image pick requests
+    final controller = context.watch<AddStoryController>();
+    if (controller.pendingImageSource != null) {
+      final source = controller.pendingImageSource!;
+      controller.clearPendingRequest();
+      // Pick image after dialog is closed
+      Future.microtask(() => pickImage(source));
+    }
+  }
 
   @override
   void dispose() {
@@ -75,7 +95,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     }
   }
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> pickImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(source: source);
       if (image != null) {
@@ -188,35 +208,6 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     }
   }
 
-  void _showImageSourceDialog() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: Text(AppLocalizations.of(context)!.camera),
-              onTap: () {
-                widget.onBack();
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: Text(AppLocalizations.of(context)!.gallery),
-              onTap: () {
-                widget.onBack();
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -237,7 +228,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GestureDetector(
-                onTap: _isCompressing ? null : _showImageSourceDialog,
+                onTap: _isCompressing ? null : widget.onShowImageSourceDialog,
                 child: Container(
                   height: 300,
                   decoration: BoxDecoration(
@@ -247,45 +238,45 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   ),
                   child: _isCompressing
                       ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
-                            Text(localizations.compressingImage),
-                          ],
-                        )
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(localizations.compressingImage),
+                    ],
+                  )
                       : _imageFile != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(_imageFile!, fit: BoxFit.cover),
-                        )
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(_imageFile!, fit: BoxFit.cover),
+                  )
                       : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_photo_alternate,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              localizations.tapToSelectImage,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              localizations.imageAutoCompress,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_photo_alternate,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        localizations.tapToSelectImage,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        localizations.imageAutoCompress,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -328,10 +319,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     ),
                     child: uploadProvider.isLoading
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                         : Text(localizations.uploadStory),
                   );
                 },

@@ -9,12 +9,14 @@ class StoryListScreen extends StatefulWidget {
   final Function(String) onTapped;
   final VoidCallback onLogout;
   final VoidCallback onAddStory;
+  final VoidCallback onShowLogoutDialog;
 
   const StoryListScreen({
     Key? key,
     required this.onTapped,
     required this.onLogout,
     required this.onAddStory,
+    required this.onShowLogoutDialog,
   }) : super(key: key);
 
   @override
@@ -38,12 +40,6 @@ class _StoryListScreenState extends State<StoryListScreen> {
     }
   }
 
-  Future<void> _handleLogout() async {
-    final authProvider = context.read<AuthProvider>();
-    await authProvider.logout();
-    widget.onLogout();
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -55,31 +51,7 @@ class _StoryListScreenState extends State<StoryListScreen> {
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStories),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(localizations.logout),
-                  content: Text(localizations.areYouSureLogout),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        // FIXED: Use declarative navigation
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(localizations.cancel),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _handleLogout();
-                      },
-                      child: Text(localizations.logout),
-                    ),
-                  ],
-                ),
-              );
-            },
+            onPressed: widget.onShowLogoutDialog, // FIXED: Use declarative callback
           ),
         ],
       ),

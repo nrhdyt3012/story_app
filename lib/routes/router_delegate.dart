@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../screen/login_screen.dart';
 import '../screen/register_screen.dart';
 import '../screen/story_list_screen.dart';
 import '../screen/story_detail_screen.dart';
 import '../screen/add_story_screen.dart';
+import '../provider/add_story_controller.dart';
+import '../l10n/app_localizations.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MyRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
@@ -14,12 +18,16 @@ class MyRouterDelegate extends RouterDelegate<String>
   bool _isLoggedIn = false;
   bool _isRegister = false;
   bool _isAddStory = false;
+  bool _showLogoutDialog = false;
+  bool _showImageSourceDialog = false; // State for image source dialog
 
   MyRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
   bool get isLoggedIn => _isLoggedIn;
   bool get isRegister => _isRegister;
   bool get isAddStory => _isAddStory;
+  bool get showLogoutDialog => _showLogoutDialog;
+  bool get showImageSourceDialog => _showImageSourceDialog;
 
   void setLoggedIn(bool value) {
     _isLoggedIn = value;
@@ -33,6 +41,16 @@ class MyRouterDelegate extends RouterDelegate<String>
 
   void setAddStory(bool value) {
     _isAddStory = value;
+    notifyListeners();
+  }
+
+  void setShowLogoutDialog(bool value) {
+    _showLogoutDialog = value;
+    notifyListeners();
+  }
+
+  void setShowImageSourceDialog(bool value) {
+    _showImageSourceDialog = value;
     notifyListeners();
   }
 
@@ -97,6 +115,9 @@ class MyRouterDelegate extends RouterDelegate<String>
               onAddStory: () {
                 setAddStory(true);
               },
+              onShowLogoutDialog: () {
+                setShowLogoutDialog(true);
+              },
             ),
           ),
           if (_isAddStory)
@@ -108,6 +129,9 @@ class MyRouterDelegate extends RouterDelegate<String>
                 },
                 onBack: () {
                   setAddStory(false);
+                },
+                onShowImageSourceDialog: () {
+                  setShowImageSourceDialog(true);
                 },
               ),
             ),
@@ -122,6 +146,46 @@ class MyRouterDelegate extends RouterDelegate<String>
                 },
               ),
             ),
+          // Image Source Dialog as a page (declarative approach)
+          if (_showImageSourceDialog)
+            MaterialPage(
+              key: const ValueKey('ImageSourceDialog'),
+              child: Builder(
+                builder: (context) {
+                  final controller = Provider.of<AddStoryController>(
+                    context,
+                    listen: false,
+                  );
+                  return ImageSourceDialogPage(
+                    onCamera: () {
+                      controller.requestImagePick(ImageSource.camera);
+                      setShowImageSourceDialog(false);
+                    },
+                    onGallery: () {
+                      controller.requestImagePick(ImageSource.gallery);
+                      setShowImageSourceDialog(false);
+                    },
+                    onCancel: () {
+                      setShowImageSourceDialog(false);
+                    },
+                  );
+                },
+              ),
+            ),
+          // Logout Dialog as a page (declarative approach)
+          if (_showLogoutDialog)
+            MaterialPage(
+              key: const ValueKey('LogoutDialog'),
+              child: LogoutDialogPage(
+                onConfirm: () {
+                  setShowLogoutDialog(false);
+                  setLoggedIn(false);
+                },
+                onCancel: () {
+                  setShowLogoutDialog(false);
+                },
+              ),
+            ),
         ],
       ],
       onPopPage: (route, result) {
@@ -130,7 +194,12 @@ class MyRouterDelegate extends RouterDelegate<String>
           return false;
         }
 
-        if (_selectedStoryId != null) {
+        // Handle dialog pops
+        if (_showImageSourceDialog) {
+          _showImageSourceDialog = false;
+        } else if (_showLogoutDialog) {
+          _showLogoutDialog = false;
+        } else if (_selectedStoryId != null) {
           _selectedStoryId = null;
         } else if (_isAddStory) {
           _isAddStory = false;
@@ -146,4 +215,125 @@ class MyRouterDelegate extends RouterDelegate<String>
 
   @override
   Future<void> setNewRoutePath(String configuration) async {}
+}
+
+// Declarative Image Source Dialog as a Page
+class ImageSourceDialogPage extends StatelessWidget {
+  final VoidCallback onCamera;
+  final VoidCallback onGallery;
+  final VoidCallback onCancel;
+
+  const ImageSourceDialogPage({
+    Key? key,
+    required this.onCamera,
+    required this.onGallery,
+    required this.onCancel,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return GestureDetector(
+      onTap: onCancel,
+      behavior: HitTestBehavior.opaque,
+      child: Material(
+        color: Colors.black54,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: GestureDetector(
+            onTap: () {}, // Prevent closing when tapping on the dialog itself
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.camera_alt),
+                      title: Text(localizations.camera),
+                      onTap: onCamera,
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.photo_library),
+                      title: Text(localizations.gallery),
+                      onTap: onGallery,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Declarative Logout Dialog as a Page
+class LogoutDialogPage extends StatelessWidget {
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
+
+  const LogoutDialogPage({
+    Key? key,
+    required this.onConfirm,
+    required this.onCancel,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Material(
+      color: Colors.black54,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                localizations.logout,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                localizations.areYouSureLogout,
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: onCancel,
+                    child: Text(localizations.cancel),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    onPressed: onConfirm,
+                    child: Text(localizations.logout),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
