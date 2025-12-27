@@ -305,9 +305,9 @@ class LogoutDialogPage extends StatelessWidget {
             children: [
               Text(
                 localizations.logout,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(

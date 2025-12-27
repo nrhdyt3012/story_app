@@ -241,45 +241,45 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   ),
                   child: _isCompressing
                       ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 16),
-                      Text(localizations.compressingImage),
-                    ],
-                  )
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(localizations.compressingImage),
+                          ],
+                        )
                       : _imageFile != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(_imageFile!, fit: BoxFit.cover),
-                  )
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_imageFile!, fit: BoxFit.cover),
+                        )
                       : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        localizations.tapToSelectImage,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              localizations.tapToSelectImage,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              localizations.imageAutoCompress,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        localizations.imageAutoCompress,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -322,10 +322,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     ),
                     child: uploadProvider.isLoading
                         ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : Text(localizations.uploadStory),
                   );
                 },

@@ -53,9 +53,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => UploadProvider(apiService: ApiService()),
         ),
-        ChangeNotifierProvider(
-          create: (_) => AddStoryController(),
-        ),
+        ChangeNotifierProvider(create: (_) => AddStoryController()),
       ],
       child: MaterialApp.router(
         title: 'Story App',
@@ -81,8 +79,8 @@ class _MyAppState extends State<MyApp> {
 class MyRouteInformationParser extends RouteInformationParser<String> {
   @override
   Future<String> parseRouteInformation(
-      RouteInformation routeInformation,
-      ) async {
+    RouteInformation routeInformation,
+  ) async {
     return routeInformation.uri.toString();
   }
 
