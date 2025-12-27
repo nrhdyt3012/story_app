@@ -41,9 +41,12 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     final controller = context.watch<AddStoryController>();
     if (controller.pendingImageSource != null) {
       final source = controller.pendingImageSource!;
-      controller.clearPendingRequest();
-      // Pick image after dialog is closed
-      Future.microtask(() => pickImage(source));
+
+      // FIXED: Wrap with addPostFrameCallback to avoid calling setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearPendingRequest();
+        pickImage(source);
+      });
     }
   }
 
