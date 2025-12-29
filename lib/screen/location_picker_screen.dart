@@ -6,11 +6,13 @@ import 'package:location/location.dart';
 class LocationPickerScreen extends StatefulWidget {
   final LatLng? initialLocation;
   final Function(LatLng, String) onLocationSelected;
+  final VoidCallback onBack;
 
   const LocationPickerScreen({
     Key? key,
     this.initialLocation,
     required this.onLocationSelected,
+    required this.onBack,
   }) : super(key: key);
 
   @override
@@ -100,13 +102,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pick Location'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: widget.onBack,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
               if (_selectedLocation != null) {
                 widget.onLocationSelected(_selectedLocation!, _address);
-                Navigator.pop(context);
               }
             },
           ),
@@ -142,9 +147,34 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 : {},
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
+            zoomControlsEnabled: false, // Disable default zoom controls
+          ),
+          // Custom positioned zoom controls to avoid overlap
+          Positioned(
+            right: 16,
+            bottom: 200,
+            child: Column(
+              children: [
+                FloatingActionButton.small(
+                  heroTag: 'zoom_in',
+                  onPressed: () {
+                    _mapController?.animateCamera(CameraUpdate.zoomIn());
+                  },
+                  child: const Icon(Icons.add),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton.small(
+                  heroTag: 'zoom_out',
+                  onPressed: () {
+                    _mapController?.animateCamera(CameraUpdate.zoomOut());
+                  },
+                  child: const Icon(Icons.remove),
+                ),
+              ],
+            ),
           ),
           Positioned(
-            bottom: 100,
+            bottom: 90,
             left: 16,
             right: 16,
             child: Card(
@@ -186,6 +216,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         onPressed: _getCurrentLocation,
         child: const Icon(Icons.my_location),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

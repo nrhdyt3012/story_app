@@ -10,18 +10,19 @@ import '../provider/upload_provider.dart';
 import '../provider/story_provider.dart';
 import '../provider/add_story_controller.dart';
 import '../l10n/app_localizations.dart';
-import 'location_picker_screen.dart';
 
 class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
   final VoidCallback onBack;
   final VoidCallback onShowImageSourceDialog;
+  final Function(LatLng?, Function(LatLng, String)) onShowLocationPicker;
 
   const AddStoryScreen({
     Key? key,
     required this.onUpload,
     required this.onBack,
     required this.onShowImageSourceDialog,
+    required this.onShowLocationPicker,
   }) : super(key: key);
 
   @override
@@ -166,19 +167,15 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
   }
 
   Future<void> _pickLocation() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LocationPickerScreen(
-          initialLocation: _selectedLocation,
-          onLocationSelected: (location, address) {
-            setState(() {
-              _selectedLocation = location;
-              _locationAddress = address;
-            });
-          },
-        ),
-      ),
+    // Menggunakan declarative navigation
+    widget.onShowLocationPicker(
+      _selectedLocation,
+          (location, address) {
+        setState(() {
+          _selectedLocation = location;
+          _locationAddress = address;
+        });
+      },
     );
   }
 

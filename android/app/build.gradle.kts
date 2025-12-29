@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,14 +8,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-fun getLocalProperty(key: String, file: String = "local.properties"): String {
-    val properties = java.util.Properties()
-    val localProperties = File(rootProject.projectDir, file)
-    if (localProperties.exists()) {
-        localProperties.inputStream().use { properties.load(it) }
+// Fungsi untuk membaca local.properties
+fun getLocalProperty(key: String): String {
+    val properties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        properties.load(FileInputStream(localPropertiesFile))
     }
-    return properties.getProperty(key, "")
+    return properties.getProperty(key) ?: ""
 }
+
 android {
     namespace = "com.example.story_app"
     compileSdk = flutter.compileSdkVersion
@@ -31,11 +36,14 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.story_app"
         // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // For more information, see: https://docs.flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Tambahkan API key sebagai manifestPlaceholders
+        manifestPlaceholders["MAPS_API_KEY"] = getLocalProperty("MAPS_API_KEY")
     }
 
     buildTypes {

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../screen/login_screen.dart';
 import '../screen/register_screen.dart';
 import '../screen/story_list_screen.dart';
 import '../screen/story_detail_screen.dart';
 import '../screen/add_story_screen.dart';
+import '../screen/location_picker_screen.dart';
 import '../provider/add_story_controller.dart';
 import '../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +21,10 @@ class MyRouterDelegate extends RouterDelegate<String>
   bool _isRegister = false;
   bool _isAddStory = false;
   bool _showLogoutDialog = false;
-  bool _showImageSourceDialog = false; // State for image source dialog
+  bool _showImageSourceDialog = false;
+  bool _showLocationPicker = false;
+  LatLng? _initialLocation;
+  Function(LatLng, String)? _onLocationSelected;
 
   MyRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
@@ -28,6 +33,7 @@ class MyRouterDelegate extends RouterDelegate<String>
   bool get isAddStory => _isAddStory;
   bool get showLogoutDialog => _showLogoutDialog;
   bool get showImageSourceDialog => _showImageSourceDialog;
+  bool get showLocationPicker => _showLocationPicker;
 
   void setLoggedIn(bool value) {
     _isLoggedIn = value;
@@ -54,6 +60,17 @@ class MyRouterDelegate extends RouterDelegate<String>
     notifyListeners();
   }
 
+  void setShowLocationPicker(
+      bool value, {
+        LatLng? initialLocation,
+        Function(LatLng, String)? onLocationSelected,
+      }) {
+    _showLocationPicker = value;
+    _initialLocation = initialLocation;
+    _onLocationSelected = onLocationSelected;
+    notifyListeners();
+  }
+
   void selectStory(String id) {
     _selectedStoryId = id;
     notifyListeners();
@@ -65,6 +82,9 @@ class MyRouterDelegate extends RouterDelegate<String>
       return _isRegister ? '/register' : '/login';
     }
     if (_isAddStory) {
+      if (_showLocationPicker) {
+        return '/add-story/location-picker';
+      }
       return '/add-story';
     }
     if (_selectedStoryId != null) {
@@ -133,6 +153,29 @@ class MyRouterDelegate extends RouterDelegate<String>
                 onShowImageSourceDialog: () {
                   setShowImageSourceDialog(true);
                 },
+                onShowLocationPicker: (initialLocation, onLocationSelected) {
+                  setShowLocationPicker(
+                    true,
+                    initialLocation: initialLocation,
+                    onLocationSelected: onLocationSelected,
+                  );
+                },
+              ),
+            ),
+          if (_showLocationPicker && _isAddStory)
+            MaterialPage(
+              key: const ValueKey('LocationPickerScreen'),
+              child: LocationPickerScreen(
+                initialLocation: _initialLocation,
+                onLocationSelected: (location, address) {
+                  if (_onLocationSelected != null) {
+                    _onLocationSelected!(location, address);
+                  }
+                  setShowLocationPicker(false);
+                },
+                onBack: () {
+                  setShowLocationPicker(false);
+                },
               ),
             ),
           if (_selectedStoryId != null)
@@ -146,7 +189,6 @@ class MyRouterDelegate extends RouterDelegate<String>
                 },
               ),
             ),
-          // Image Source Dialog as a page (declarative approach)
           if (_showImageSourceDialog)
             MaterialPage(
               key: const ValueKey('ImageSourceDialog'),
@@ -172,7 +214,6 @@ class MyRouterDelegate extends RouterDelegate<String>
                 },
               ),
             ),
-          // Logout Dialog as a page (declarative approach)
           if (_showLogoutDialog)
             MaterialPage(
               key: const ValueKey('LogoutDialog'),
@@ -194,8 +235,9 @@ class MyRouterDelegate extends RouterDelegate<String>
           return false;
         }
 
-        // Handle dialog pops
-        if (_showImageSourceDialog) {
+        if (_showLocationPicker) {
+          _showLocationPicker = false;
+        } else if (_showImageSourceDialog) {
           _showImageSourceDialog = false;
         } else if (_showLogoutDialog) {
           _showLogoutDialog = false;
@@ -217,7 +259,6 @@ class MyRouterDelegate extends RouterDelegate<String>
   Future<void> setNewRoutePath(String configuration) async {}
 }
 
-// Declarative Image Source Dialog as a Page
 class ImageSourceDialogPage extends StatelessWidget {
   final VoidCallback onCamera;
   final VoidCallback onGallery;
@@ -242,7 +283,7 @@ class ImageSourceDialogPage extends StatelessWidget {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: GestureDetector(
-            onTap: () {}, // Prevent closing when tapping on the dialog itself
+            onTap: () {},
             child: Container(
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -275,7 +316,6 @@ class ImageSourceDialogPage extends StatelessWidget {
   }
 }
 
-// Declarative Logout Dialog as a Page
 class LogoutDialogPage extends StatelessWidget {
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
@@ -305,9 +345,10 @@ class LogoutDialogPage extends StatelessWidget {
             children: [
               Text(
                 localizations.logout,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
