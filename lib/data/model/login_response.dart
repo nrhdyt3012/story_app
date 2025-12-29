@@ -1,33 +1,28 @@
-class LoginResponse {
-  final bool error;
-  final String message;
-  final LoginResult? loginResult;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  LoginResponse({required this.error, required this.message, this.loginResult});
+part 'login_response.freezed.dart';
+part 'login_response.g.dart';
 
-  factory LoginResponse.fromJson(Map json) {
-    return LoginResponse(
-      error: json['error'] ?? false,
-      message: json['message'] ?? '',
-      loginResult: json['loginResult'] != null
-          ? LoginResult.fromJson(json['loginResult'])
-          : null,
-    );
-  }
+@freezed
+class LoginResponse with _$LoginResponse {
+  const factory LoginResponse({
+    required bool error,
+    required String message,
+    LoginResult? loginResult,
+  }) = _LoginResponse;
+
+  factory LoginResponse.fromJson(Map<String, dynamic> json) =>
+      _$LoginResponseFromJson(json);
 }
 
-class LoginResult {
-  final String userId;
-  final String name;
-  final String token;
+@freezed
+class LoginResult with _$LoginResult {
+  const factory LoginResult({
+    required String userId,
+    required String name,
+    required String token,
+  }) = _LoginResult;
 
-  LoginResult({required this.userId, required this.name, required this.token});
-
-  factory LoginResult.fromJson(Map json) {
-    return LoginResult(
-      userId: json['userId'] ?? '',
-      name: json['name'] ?? '',
-      token: json['token'] ?? '',
-    );
-  }
+  factory LoginResult.fromJson(Map<String, dynamic> json) =>
+      _$LoginResultFromJson(json);
 }

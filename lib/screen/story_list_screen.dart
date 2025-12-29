@@ -24,10 +24,26 @@ class StoryListScreen extends StatefulWidget {
 }
 
 class _StoryListScreenState extends State<StoryListScreen> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     _loadStories();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMore();
+    }
   }
 
   Future<void> _loadStories() async {
@@ -36,6 +52,16 @@ class _StoryListScreenState extends State<StoryListScreen> {
     final token = await authProvider.getToken();
 
     if (token != null) {
+      storyProvider.fetchStories(token, refresh: true);
+    }
+  }
+
+  Future<void> _loadMore() async {
+    final authProvider = context.read<AuthProvider>();
+    final storyProvider = context.read<StoryProvider>();
+    final token = await authProvider.getToken();
+
+    if (token != null && !storyProvider.isLoadingMore) {
       storyProvider.fetchStories(token);
     }
   }
@@ -51,18 +77,18 @@ class _StoryListScreenState extends State<StoryListScreen> {
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStories),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed:
-                widget.onShowLogoutDialog, // FIXED: Use declarative callback
+            onPressed: widget.onShowLogoutDialog,
           ),
         ],
       ),
       body: Consumer<StoryProvider>(
         builder: (context, storyProvider, child) {
-          if (storyProvider.isLoading) {
+          if (storyProvider.isLoading && storyProvider.stories.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (storyProvider.errorMessage != null) {
+          if (storyProvider.errorMessage != null &&
+              storyProvider.stories.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -101,8 +127,19 @@ class _StoryListScreenState extends State<StoryListScreen> {
           return RefreshIndicator(
             onRefresh: _loadStories,
             child: ListView.builder(
-              itemCount: storyProvider.stories.length,
+              controller: _scrollController,
+              itemCount: storyProvider.stories.length +
+                  (storyProvider.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
+                if (index == storyProvider.stories.length) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
                 final story = storyProvider.stories[index];
                 return StoryCard(
                   story: story,

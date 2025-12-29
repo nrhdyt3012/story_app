@@ -9,7 +9,7 @@ import '../model/upload_response.dart';
 class ApiService {
   static const String baseUrl = 'https://story-api.dicoding.dev/v1';
 
-  Future login(String email, String password) async {
+  Future<LoginResponse> login(String email, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
@@ -23,7 +23,11 @@ class ApiService {
     }
   }
 
-  Future register(String name, String email, String password) async {
+  Future<RegisterResponse> register(
+      String name,
+      String email,
+      String password,
+      ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/register'),
@@ -37,10 +41,17 @@ class ApiService {
     }
   }
 
-  Future getAllStories(String token, {int page = 1, int size = 10}) async {
+  Future<StoryListResponse> getAllStories(
+      String token, {
+        int page = 1,
+        int size = 10,
+        int location = 0,
+      }) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/stories?page=$page&size=$size'),
+        Uri.parse(
+          '$baseUrl/stories?page=$page&size=$size&location=$location',
+        ),
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -54,7 +65,7 @@ class ApiService {
     }
   }
 
-  Future getStoryDetail(String token, String id) async {
+  Future<StoryDetailResponse> getStoryDetail(String token, String id) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/stories/$id'),
@@ -71,7 +82,13 @@ class ApiService {
     }
   }
 
-  Future uploadStory(String token, String description, File photo) async {
+  Future<UploadResponse> uploadStory(
+      String token,
+      String description,
+      File photo, {
+        double? lat,
+        double? lon,
+      }) async {
     try {
       var request = http.MultipartRequest(
         'POST',
@@ -79,6 +96,11 @@ class ApiService {
       );
       request.headers['Authorization'] = 'Bearer $token';
       request.fields['description'] = description;
+
+      if (lat != null && lon != null) {
+        request.fields['lat'] = lat.toString();
+        request.fields['lon'] = lon.toString();
+      }
 
       var multipartFile = await http.MultipartFile.fromPath(
         'photo',

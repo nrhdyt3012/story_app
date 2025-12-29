@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 import '../provider/auth_provider.dart';
 import '../provider/story_provider.dart';
 import '../l10n/app_localizations.dart';
@@ -20,6 +22,9 @@ class StoryDetailScreen extends StatefulWidget {
 }
 
 class _StoryDetailScreenState extends State<StoryDetailScreen> {
+  String? _address;
+  bool _isLoadingAddress = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,7 +37,37 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     final token = await authProvider.getToken();
 
     if (token != null) {
-      storyProvider.fetchStoryDetail(token, widget.storyId);
+      await storyProvider.fetchStoryDetail(token, widget.storyId);
+
+      // Get address if location exists
+      final story = storyProvider.selectedStory;
+      if (story != null && story.lat != null && story.lon != null) {
+        _getAddressFromLatLng(story.lat!, story.lon!);
+      }
+    }
+  }
+
+  Future<void> _getAddressFromLatLng(double lat, double lon) async {
+    setState(() {
+      _isLoadingAddress = true;
+    });
+
+    try {
+      final placemarks = await geo.placemarkFromCoordinates(lat, lon);
+
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks.first;
+        setState(() {
+          _address = '${placemark.street}, ${placemark.subLocality}, '
+              '${placemark.locality}, ${placemark.country}';
+          _isLoadingAddress = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _address = 'Unable to get address';
+        _isLoadingAddress = false;
+      });
     }
   }
 
@@ -120,14 +155,17 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                               children: [
                                 Text(
                                   story.name,
-                                  style: Theme.of(context).textTheme.titleMedium
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
                                       ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  DateFormat(
-                                    'MMM dd, yyyy - HH:mm',
-                                  ).format(story.createdAt),
-                                  style: Theme.of(context).textTheme.bodySmall
+                                  DateFormat('MMM dd, yyyy - HH:mm')
+                                      .format(story.createdAt),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
                                       ?.copyWith(color: Colors.grey),
                                 ),
                               ],
@@ -138,7 +176,9 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       const SizedBox(height: 24),
                       Text(
                         localizations.description,
-                        style: Theme.of(context).textTheme.titleMedium
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -150,18 +190,64 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                         const SizedBox(height: 24),
                         Text(
                           localizations.location,
-                          style: Theme.of(context).textTheme.titleMedium
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Lat: ${story.lat?.toStringAsFixed(4)}, Lon: ${story.lon?.toStringAsFixed(4)}',
+                        if (_isLoadingAddress)
+                          const CircularProgressIndicator()
+                        else if (_address != null)
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.location_on, size: 20),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(_address!)),
+                                ],
+                              ),
                             ),
-                          ],
+                          ),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: GoogleMap(
+                              initialCameraPosition: CameraPosition(
+                                target: LatLng(story.lat!, story.lon!),
+                                zoom: 15,
+                              ),
+                              markers: {
+                                Marker(
+                                  markerId: MarkerId(story.id),
+                                  position: LatLng(story.lat!, story.lon!),
+                                  infoWindow: InfoWindow(
+                                    title: story.name,
+                                    snippet: _address ?? 'Loading address...',
+                                  ),
+                                ),
+                              },
+                              zoomControlsEnabled: false,
+                              myLocationButtonEnabled: false,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Lat: ${story.lat?.toStringAsFixed(6)}, '
+                              'Lon: ${story.lon?.toStringAsFixed(6)}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ],

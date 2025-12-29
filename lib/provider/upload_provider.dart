@@ -15,7 +15,13 @@ class UploadProvider with ChangeNotifier {
 
   UploadProvider({required this.apiService});
 
-  Future uploadStory(String token, String description, File photo) async {
+  Future<bool> uploadStory(
+      String token,
+      String description,
+      File photo, {
+        double? lat,
+        double? lon,
+      }) async {
     _isLoading = true;
     _errorMessage = null;
     _successMessage = null;
@@ -31,7 +37,13 @@ class UploadProvider with ChangeNotifier {
         return false;
       }
 
-      final response = await apiService.uploadStory(token, description, photo);
+      final response = await apiService.uploadStory(
+        token,
+        description,
+        photo,
+        lat: lat,
+        lon: lon,
+      );
 
       if (!response.error) {
         _successMessage = response.message;

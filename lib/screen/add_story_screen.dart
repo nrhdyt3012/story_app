@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../provider/auth_provider.dart';
 import '../provider/upload_provider.dart';
 import '../provider/story_provider.dart';
 import '../provider/add_story_controller.dart';
 import '../l10n/app_localizations.dart';
+import 'location_picker_screen.dart';
 
 class AddStoryScreen extends StatefulWidget {
   final VoidCallback onUpload;
@@ -32,17 +34,17 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
   final ImagePicker _picker = ImagePicker();
   File? _imageFile;
   bool _isCompressing = false;
+  LatLng? _selectedLocation;
+  String? _locationAddress;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Listen to controller for pending image pick requests
     final controller = context.watch<AddStoryController>();
     if (controller.pendingImageSource != null) {
       final source = controller.pendingImageSource!;
 
-      // FIXED: Wrap with addPostFrameCallback to avoid calling setState during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.clearPendingRequest();
         pickImage(source);
@@ -113,9 +115,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                AppLocalizations.of(
-                  context,
-                )!.originalSize((fileSize / 1024 / 1024).toStringAsFixed(2)),
+                AppLocalizations.of(context)!
+                    .originalSize((fileSize / 1024 / 1024).toStringAsFixed(2)),
               ),
               duration: const Duration(seconds: 2),
             ),
@@ -164,6 +165,23 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     }
   }
 
+  Future<void> _pickLocation() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LocationPickerScreen(
+          initialLocation: _selectedLocation,
+          onLocationSelected: (location, address) {
+            setState(() {
+              _selectedLocation = location;
+              _locationAddress = address;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleUpload() async {
     if (_formKey.currentState!.validate() && _imageFile != null) {
       final authProvider = context.read<AuthProvider>();
@@ -177,6 +195,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
           token,
           _descriptionController.text,
           _imageFile!,
+          lat: _selectedLocation?.latitude,
+          lon: _selectedLocation?.longitude,
         );
 
         if (success && mounted) {
@@ -187,7 +207,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
             ),
           );
 
-          await storyProvider.fetchStories(token);
+          await storyProvider.fetchStories(token, refresh: true);
           widget.onUpload();
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -241,45 +261,45 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   ),
                   child: _isCompressing
                       ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
-                            Text(localizations.compressingImage),
-                          ],
-                        )
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 16),
+                      Text(localizations.compressingImage),
+                    ],
+                  )
                       : _imageFile != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(_imageFile!, fit: BoxFit.cover),
-                        )
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(_imageFile!, fit: BoxFit.cover),
+                  )
                       : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_photo_alternate,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              localizations.tapToSelectImage,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              localizations.imageAutoCompress,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_photo_alternate,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        localizations.tapToSelectImage,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        localizations.imageAutoCompress,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -310,6 +330,50 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: _pickLocation,
+                icon: const Icon(Icons.location_on),
+                label: Text(
+                  _selectedLocation == null
+                      ? 'Add Location (Optional)'
+                      : 'Location Added',
+                ),
+              ),
+              if (_selectedLocation != null && _locationAddress != null) ...[
+                const SizedBox(height: 8),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _locationAddress!,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, size: 20),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedLocation = null;
+                                  _locationAddress = null;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               Consumer<UploadProvider>(
                 builder: (context, uploadProvider, child) {
@@ -322,10 +386,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     ),
                     child: uploadProvider.isLoading
                         ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                         : Text(localizations.uploadStory),
                   );
                 },
