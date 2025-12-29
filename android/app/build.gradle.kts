@@ -5,6 +5,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+fun getLocalProperty(key: String, file: String = "local.properties"): String {
+    val properties = java.util.Properties()
+    val localProperties = File(rootProject.projectDir, file)
+    if (localProperties.exists()) {
+        localProperties.inputStream().use { properties.load(it) }
+    }
+    return properties.getProperty(key, "")
+}
 android {
     namespace = "com.example.story_app"
     compileSdk = flutter.compileSdkVersion
